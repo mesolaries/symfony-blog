@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/article/list.css') }}">
+{% endblock %}
+
+{% block body %}
+    <!-- Blog Entries Column -->
+    <div class="col-md-8">
+
+        <h1 class="my-4">
+            <small>All articles</small>
+        </h1>
+
+        {% for article in articles %}
+            <!-- Blog Post -->
+            <div class="card mb-4">
+                <img class="card-img-top" src="{{ article.picture is not null ? asset(articles_web_dir ~ '/' ~ article.picture) : 'http://placehold.it/750x300' }}" alt="Card image cap">
+                <div class="card-body">
+                    <h2 class="card-title">{{ article.title }}</h2>
+                    <p class="card-text">{{ article.content|slice(0, 100) }}</p>
+                    <a href="#" class="btn btn-primary">Read More &rarr;</a>
+                </div>
+                <div class="card-footer text-muted">
+                    Posted on {{ article.publishedAt|date('F d, Y') }} by
+                    <a href="#">{{ article.author.name }} <small>@{{ article.author.username }}</small></a>
+                </div>
+            </div>
+        {% endfor %}
+
+        <!-- Pagination -->
+        <ul class="pagination justify-content-center mb-4">
+            <li class="page-item">
+                <a class="page-link" href="#">&larr; Older</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" href="#">Newer &rarr;</a>
+            </li>
+        </ul>
+
+    </div>
+
+    {{ include('template_parts/_sidebar.html.twig') }}
+{% endblock %}

@@ -19,6 +19,16 @@ class ArticleRepository extends ServiceEntityRepository
         parent::__construct($registry, Article::class);
     }
 
+    public function findWithPublicArticles()
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.isPublic = :isPublic')
+            ->setParameter('isPublic', true)
+            ->orderBy('a.publishedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     // /**
     //  * @return Article[] Returns an array of Article objects
     //  */
