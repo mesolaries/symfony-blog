@@ -1,0 +1,27 @@
+<!-- Categories Widget -->
+<div class="card my-4">
+    <h5 class="card-header">Categories</h5>
+    <div class="card-body">
+        <div class="row">
+            {% set middle = (categories|length / 2 )|round(0, 'ceil') %}
+            <div class="col-lg-6">
+                <ul class="list-unstyled mb-0">
+                {% for category in categories|slice(0, middle) %}
+                    <li>
+                        <a href="{{ path('category.show', {slug: category.slug}) }}">{{ category.name }}</a>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div class="col-lg-6">
+                <ul class="list-unstyled mb-0">
+                    {% for category in categories|slice(middle) %}
+                        <li>
+                            <a href="{{ path('category.show', {slug: category.slug}) }}">{{ category.name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

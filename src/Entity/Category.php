@@ -67,6 +67,13 @@ class Category
         return $this->articles;
     }
 
+    public function getPublicArticles()
+    {
+        return $this->articles->filter(function (Article $article) {
+           return $article->getIsPublic();
+        });
+    }
+
     public function addArticle(Article $article): self
     {
         if (!$this->articles->contains($article)) {

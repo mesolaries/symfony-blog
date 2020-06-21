@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Article;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,6 +20,9 @@ class ArticleRepository extends ServiceEntityRepository
         parent::__construct($registry, Article::class);
     }
 
+    /**
+     * @return int|mixed|string
+     */
     public function findWithPublicArticles()
     {
         return $this->createQueryBuilder('a')
@@ -27,6 +31,23 @@ class ArticleRepository extends ServiceEntityRepository
             ->orderBy('a.publishedAt', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param string $slug
+     *
+     * @return int|mixed|string|null
+     * @throws NonUniqueResultException
+     */
+    public function findPublicArticle(string $slug)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.slug = :slug')
+            ->andWhere('a.isPublic = :isPublic')
+            ->setParameter('slug', $slug)
+            ->setParameter('isPublic', true)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     // /**
