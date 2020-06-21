@@ -6,10 +6,12 @@ use App\Repository\ArticleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
  * @ORM\Table(name="articles")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Article
 {
@@ -75,6 +77,12 @@ class Article
      * @ORM\Column(type="boolean")
      */
     private $isPublic;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Gedmo\Slug(fields={"title"})
+     */
+    private $slug;
 
     public function __construct()
     {
@@ -270,5 +278,25 @@ class Article
         $this->isPublic = $isPublic;
 
         return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function prePersist()
+    {
+        $this->createdAt = new \DateTime();
     }
 }

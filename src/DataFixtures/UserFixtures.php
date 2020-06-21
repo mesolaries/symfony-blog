@@ -23,7 +23,6 @@ class UserFixtures extends Fixture
         $user->setEmail('aryastark@gmail.com');
         $user->setRoles(['ROLE_USER']);
         $user->setUsername('aryastark');
-        $user->setCreatedAt(new \DateTime());
         $user->setPassword($this->encoder->encodePassword($user, 'aryastark'));
 
         $manager->persist($user);

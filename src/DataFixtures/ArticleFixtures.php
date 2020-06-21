@@ -12,7 +12,6 @@ class ArticleFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager)
     {
         $article1 = new Article();
-        $article1->setCreatedAt(new \DateTime());
         $article1->setPublishedAt(new \DateTime());
         $article1->setIsPublic(true);
         $article1->setCategory($this->getReference('categoryProgramming'));
@@ -24,7 +23,6 @@ class ArticleFixtures extends Fixture implements DependentFixtureInterface
         $article1->addTag($this->getReference('tag2'));
 
         $article2 = new Article();
-        $article2->setCreatedAt(new \DateTime());
         $article2->setPublishedAt(new \DateTime());
         $article2->setIsPublic(true);
         $article2->setCategory($this->getReference('categoryDesign'));
@@ -36,8 +34,21 @@ class ArticleFixtures extends Fixture implements DependentFixtureInterface
         $article2->addTag($this->getReference('tag3'));
         $article2->addTag($this->getReference('tag4'));
 
+        $article3 = new Article();
+        $article3->setPublishedAt(new \DateTime());
+        $article3->setIsPublic(true);
+        $article3->setCategory($this->getReference('categoryDesign'));
+        $article3->setAuthor($this->getReference('user'));
+        $article3->setTitle('Article about design');
+        $article3->setContent('Design is good.');
+        $article3->setPicture('programming_pic.png');
+        $article3->addTag($this->getReference('tag3'));
+        $article3->addTag($this->getReference('tag4'));
+        $article3->addTag($this->getReference('tag5'));
+
         $manager->persist($article1);
         $manager->persist($article2);
+        $manager->persist($article3);
 
         $manager->flush();
     }
