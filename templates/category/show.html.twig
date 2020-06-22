@@ -11,9 +11,21 @@
     <!-- Blog Entries Column -->
     <div class="col-md-8">
 
-        <h1 class="my-4">
+        <h1 class="my-4 d-inline-block">
             <small><em>{{ category.name }}</em> category articles</small>
         </h1>
+
+        <div class="dropdown my-4 d-inline-block h1">
+            <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Sort by:
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                {{ knp_pagination_sortable(articles, 'Title A-Z', 'a.title', {'class': 'dropdown-item'}, {'direction': 'ASC'}) }}
+                {{ knp_pagination_sortable(articles, 'Title Z-A', 'a.title', {'class': 'dropdown-item'}, {'direction': 'DESC'}) }}
+                {{ knp_pagination_sortable(articles, 'Date Ascending', 'a.publishedAt', {'class': 'dropdown-item'}, {'direction': 'ASC'}) }}
+                {{ knp_pagination_sortable(articles, 'Date Descending', 'a.publishedAt', {'class': 'dropdown-item'}, {'direction': 'DESC'}) }}
+            </div>
+        </div>
 
         {% for article in articles %}
             <!-- Blog Post -->
