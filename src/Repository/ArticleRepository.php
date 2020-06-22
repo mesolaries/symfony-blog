@@ -50,6 +50,18 @@ class ArticleRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function findPublicArticlesBySearchQuery(string $query)
+    {
+        return $this->createQueryBuilder('a')
+            ->where("a.title LIKE :query")
+            ->andWhere('a.isPublic = :isPublic')
+            ->setParameter('query', '%'.$query.'%')
+            ->setParameter('isPublic', true)
+            ->orderBy('a.publishedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     // /**
     //  * @return Article[] Returns an array of Article objects
     //  */

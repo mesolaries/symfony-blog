@@ -1,9 +1,4 @@
 <?php
-/**
- * User: Emil
- * Date: 22/06/2020
- * Time: 2:43 am
- */
 
 namespace App\Controller;
 

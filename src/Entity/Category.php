@@ -67,6 +67,9 @@ class Category
         return $this->articles;
     }
 
+    /**
+     * @return ArrayCollection
+     */
     public function getPublicArticles()
     {
         return $this->articles->filter(function (Article $article) {
