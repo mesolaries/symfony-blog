@@ -3,3 +3,4 @@ twig:
     globals:
         articles_web_dir: '%articles_web_dir%'
         max_items_per_page: '%max_items_per_page%'
+    form_themes: ['bootstrap_4_layout.html.twig']
