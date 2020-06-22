@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 
+use App\Entity\Article;
 use App\Entity\Tag;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -28,13 +31,26 @@ class TagController extends AbstractController
     /**
      * @Route("/tag/{slug}", name="tag.show", methods="GET")
      *
-     * @param Tag $tag
+     * @param Tag                $tag
+     * @param PaginatorInterface $pagination
+     * @param Request            $request
      *
      * @return Response
      */
-    public function show(Tag $tag)
+    public function show(Tag $tag, PaginatorInterface $pagination, Request $request)
     {
-        $articles = $tag->getPublicArticles();
+        $articles = $pagination->paginate(
+            $this
+                ->getDoctrine()
+                ->getRepository(Article::class)
+                ->findPublicArticlesByTagQuery($tag),
+            $request->query->getInt('page', 1),
+            $this->getParameter('max_items_per_page'),
+            [
+                'defaultSortFieldName' => 'a.publishedAt',
+                'defaultSortDirection' => 'desc',
+            ]
+        );
 
         return $this->render('tag/show.html.twig', [
             'tag' => $tag,

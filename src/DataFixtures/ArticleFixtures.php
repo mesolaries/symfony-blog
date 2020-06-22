@@ -50,6 +50,36 @@ class ArticleFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($article2);
         $manager->persist($article3);
 
+        for ($i = 1; $i < 25; $i++) {
+            $article = new Article();
+            $article->setPublishedAt(new \DateTime());
+            $article->setIsPublic(true);
+            $article->setCategory($this->getReference('categoryProgramming'));
+            $article->setAuthor($this->getReference('user'));
+            $article->setTitle("Article about programming $i");
+            $article->setContent("Programming is good $i.");
+            $article->setPicture('programming_pic.png');
+            $article->addTag($this->getReference('tag3'));
+            $article->addTag($this->getReference('tag4'));
+            $article->addTag($this->getReference('tag5'));
+            $manager->persist($article);
+        }
+
+        for ($i = 1; $i < 25; $i++) {
+            $article = new Article();
+            $article->setPublishedAt(new \DateTime());
+            $article->setIsPublic(true);
+            $article->setCategory($this->getReference('categoryLifestyle'));
+            $article->setAuthor($this->getReference('user'));
+            $article->setTitle("Article about lifestyle $i");
+            $article->setContent("Lifestyle is good $i.");
+            $article->setPicture('programming_pic.png');
+            $article->addTag($this->getReference('tag4'));
+            $article->addTag($this->getReference('tag5'));
+            $article->addTag($this->getReference('tag6'));
+            $manager->persist($article);
+        }
+
         $manager->flush();
     }
 

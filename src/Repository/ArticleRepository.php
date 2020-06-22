@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Article;
+use App\Entity\Category;
+use App\Entity\Tag;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -23,7 +25,7 @@ class ArticleRepository extends ServiceEntityRepository
     /**
      * @return int|mixed|string
      */
-    public function findWithPublicArticles()
+    public function findPublicArticles()
     {
         return $this->createQueryBuilder('a')
             ->where('a.isPublic = :isPublic')
@@ -31,6 +33,13 @@ class ArticleRepository extends ServiceEntityRepository
             ->orderBy('a.publishedAt', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    public function findPublicArticlesQuery()
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.isPublic = :isPublic')
+            ->setParameter('isPublic', true);
     }
 
     /**
@@ -56,10 +65,28 @@ class ArticleRepository extends ServiceEntityRepository
             ->where("a.title LIKE :query")
             ->andWhere('a.isPublic = :isPublic')
             ->setParameter('query', '%'.$query.'%')
-            ->setParameter('isPublic', true)
-            ->orderBy('a.publishedAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->setParameter('isPublic', true);
+    }
+
+    public function findPublicArticlesByCategoryQuery(Category $category)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.category = :category')
+            ->andWhere('a.isPublic = :isPublic')
+            ->setParameter('category', $category)
+            ->setParameter('isPublic', true);
+    }
+
+    public function findPublicArticlesByTagQuery(Tag $tag)
+    {
+        return $this->createQueryBuilder('a')
+            ->innerJoin('a.tag', 't')
+            ->addSelect('t')
+            // ->innerJoin('a.tag', 't', 'WITH', 't.id = :tag')
+            ->where('t.id = :tag')
+            ->andWhere('a.isPublic = :isPublic')
+            ->setParameter('tag', $tag)
+            ->setParameter('isPublic', true);
     }
 
     // /**
