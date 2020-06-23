@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/article/show.css') }}">
+{% endblock %}
+
+{% block body %}
+    <!-- Post Content Column -->
+    <div class="col-lg-8">
+
+        <!-- Title -->
+        <h1 class="mt-4">{{ article.title }}</h1>
+
+        <!-- Author -->
+        <p class="lead">
+            by
+            <a href="#">{{ article.author.name }} <small>@{{ article.author.username }}</small></a>
+        </p>
+
+        <hr>
+
+        <!-- Date/Time -->
+        <p>Created on {{ article.createdAt.format('F d, Y \\a\\t H:i') }}</p>
+
+        <hr>
+
+        <!-- Preview Image -->
+        <img class="img-fluid rounded" src="{{ article.picture is not null ? asset(articles_web_dir ~ '/' ~ article.picture) : 'http://placehold.it/750x300' }}" alt="">
+
+        <hr>
+
+        <p>
+            {{ article.content }}
+        </p>
+
+        <hr>
+
+        <form action="{{ path('article.publish', {id: article.id}) }}" method="post">
+            <div class="form-group">
+                <input type="hidden" name="_method" value="POST">
+                <input type="hidden" name="token" value="{{ csrf_token(article.id ~ 'publish') }}"/>
+                <button type="submit" class="btn btn-outline-primary">Publish</button>
+            </div>
+        </form>
+
+    </div>
+
+    {{ include('template_parts/sidebar/_sidebar.html.twig') }}
+{% endblock %}

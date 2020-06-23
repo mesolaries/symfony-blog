@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create a blog post{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/article/show.css') }}">
+{% endblock %}
+
+{% block body %}
+    <!-- Post Create Column -->
+    <div class="col-lg-8">
+        <h1 class="mt-4">Create a new blog post</h1>
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div class="form-group">
+            <button type="submit" class="btn btn-outline-primary">Create</button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+    {{ include('template_parts/sidebar/_sidebar.html.twig') }}
+{% endblock %}

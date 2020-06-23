@@ -74,9 +74,10 @@ class Article
     private $publishedAt;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", options={"default" : false})
+     *
      */
-    private $isPublic;
+    private $isPublic = false;
 
     /**
      * @ORM\Column(type="string", length=255)
