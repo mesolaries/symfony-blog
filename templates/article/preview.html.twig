@@ -33,7 +33,7 @@
         <hr>
 
         <p>
-            {{ article.content }}
+            {{ article.content|raw }}
         </p>
 
         <hr>
@@ -43,6 +43,7 @@
                 <input type="hidden" name="_method" value="POST">
                 <input type="hidden" name="token" value="{{ csrf_token(article.id ~ 'publish') }}"/>
                 <button type="submit" class="btn btn-outline-primary">Publish</button>
+                <a class="btn btn-outline-warning" href="{{ path('article.edit', {slug: article.slug}) }}">Edit</a>
             </div>
         </form>
 

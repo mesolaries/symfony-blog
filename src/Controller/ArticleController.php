@@ -10,6 +10,8 @@ use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -64,7 +66,7 @@ class ArticleController extends AbstractController
     }
 
     /**
-     * @Route("/article/create", name="article.create", methods={"GET", "POST"})
+     * @Route("/article/create", name="article.create")
      * @IsGranted("ROLE_USER")
      *
      * @param Request                $request
@@ -101,7 +103,6 @@ class ArticleController extends AbstractController
 
     /**
      * @Route("/article/preview/{slug}", name="article.preview", methods="GET")
-     * @IsGranted("ROLE_USER")
      *
      * @param Article $article
      *
@@ -109,6 +110,10 @@ class ArticleController extends AbstractController
      */
     public function preview(Article $article)
     {
+        if ($article->getAuthor() != $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('No access!');
+        }
+
         return $this->render('article/preview.html.twig', [
             'article' => $article,
         ]);
@@ -124,6 +129,10 @@ class ArticleController extends AbstractController
      */
     public function publish(Article $article, EntityManagerInterface $em)
     {
+        if ($article->getAuthor() != $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('No access!');
+        }
+
         $article->setIsPublic(true);
         $article->setPublishedAt(new \DateTime());
         $em->flush();
@@ -132,6 +141,50 @@ class ArticleController extends AbstractController
 
         return $this->redirectToRoute('article.show', [
             'slug' => $article->getSlug()
+        ]);
+    }
+
+    /**
+     * @Route("/article/edit/{slug}", name="article.edit")
+     *
+     * @param Article                $article
+     * @param Request                $request
+     * @param FileUploader           $fileUploader
+     * @param EntityManagerInterface $em
+     *
+     * @return RedirectResponse|Response
+     */
+    public function edit(Article $article, Request $request, FileUploader $fileUploader, EntityManagerInterface $em)
+    {
+        if ($article->getAuthor() != $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('No access!');
+        }
+
+        $form = $this->createForm(ArticleType::class, $article);
+
+        $picture = $article->getPicture();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $article->setPicture($picture);
+            $picture = $form['picture']->getData();
+            if ($picture instanceof UploadedFile) {
+                $pictureFileName = $fileUploader->upload($picture);
+                $article->setPicture($pictureFileName);
+            }
+
+            $em->flush();
+
+            $redirectRoute = $article->getIsPublic() ? 'article.show' : 'article.preview';
+
+            return $this->redirectToRoute($redirectRoute, [
+                'slug' => $article->getSlug(),
+            ]);
+        }
+
+        return $this->render('article/edit.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 }

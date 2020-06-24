@@ -4,7 +4,9 @@ namespace App\Form;
 
 use App\Entity\Article;
 use App\Entity\Category;
+use App\Transformer\StringToFileTransformer;
 use App\Transformer\TagToStringTransformer;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -22,10 +24,12 @@ use Symfony\Component\Validator\Constraints\Regex;
 class ArticleType extends AbstractType
 {
     private DataTransformerInterface $transformer;
+    private DataTransformerInterface $fileTransformer;
 
-    public function __construct(TagToStringTransformer $transformer)
+    public function __construct(TagToStringTransformer $transformer, StringToFileTransformer $fileTransformer)
     {
         $this->transformer = $transformer;
+        $this->fileTransformer = $fileTransformer;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -37,7 +41,7 @@ class ArticleType extends AbstractType
                     new Length(['max' => 255]),
                 ]
             ])
-            ->add('content', TextareaType::class, [
+            ->add('content', CKEditorType::class, [
                 'constraints' => [
                     new NotBlank(),
                 ]
@@ -62,6 +66,11 @@ class ArticleType extends AbstractType
 
         $builder->get('tag')
             ->addModelTransformer($this->transformer);
+
+        $builder->get('picture')
+            ->addModelTransformer($this->fileTransformer);
+
+        // $builder->setMethod('PATCH');
     }
 
     public function configureOptions(OptionsResolver $resolver)

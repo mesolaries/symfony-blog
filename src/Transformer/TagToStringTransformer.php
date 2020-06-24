@@ -8,9 +8,11 @@
 namespace App\Transformer;
 
 
+use App\Entity\Article;
 use App\Entity\Tag;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\PersistentCollection;
 use Symfony\Component\Form\DataTransformerInterface;
 
 class TagToStringTransformer implements DataTransformerInterface
@@ -25,10 +27,12 @@ class TagToStringTransformer implements DataTransformerInterface
 
     public function transform($tag)
     {
-        if ($tag instanceof ArrayCollection) {
-            $tag = $tag->toArray();
+        if (null === $tag) {
+            return '';
         }
-        return implode(',', $tag);
+
+        $tag = $tag->toArray();
+        return implode(', ', $tag);
     }
 
     /**
@@ -46,11 +50,12 @@ class TagToStringTransformer implements DataTransformerInterface
         $newNames = array_diff($names, $tags);
         foreach ($newNames as $name) {
             $tag = new Tag();
-            $tag->setName($name);
+            $tag->setName(trim($name));
             $this->em->persist($tag);
             $tags[] = $tag;
         }
         $this->em->flush();
-        return $tags;
+
+        return new PersistentCollection($this->em, $this->em->getClassMetadata(Tag::class), new ArrayCollection($tags));
     }
 }

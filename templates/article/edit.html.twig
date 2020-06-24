@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit your blog post{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/article/show.css') }}">
+{% endblock %}
+
+{% form_theme form _self %}
+
+{% block _article_picture_widget %}
+    <div class="mb-2">
+        {% if form.vars.data %}
+            <img class="media-object" src="{{ asset(articles_web_dir ~ '/' ~ form.vars.data.filename) }}">
+        {% endif %}
+    </div>
+
+    {{ form_widget(form) }}
+{% endblock %}
+
+{% block body %}
+    <!-- Post Create Column -->
+    <div class="col-lg-8">
+        <h1 class="mt-4">Edit your blog post</h1>
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div class="form-group">
+            <button type="submit" class="btn btn-outline-primary">Submit</button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+    {{ include('template_parts/sidebar/_sidebar.html.twig') }}
+{% endblock %}
