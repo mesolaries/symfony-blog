@@ -4,13 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Form\ArticleType;
+use App\Form\CommentType;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,7 +51,7 @@ class ArticleController extends AbstractController
     /**
      * Shows an article by slug
      *
-     * @Route("/article/read/{slug}", name="article.show", methods="GET")
+     * @Route("/article/{slug}/read", name="article.show", methods="GET")
      *
      * @Entity("article", expr="repository.findPublicArticle(slug)")
      *
@@ -60,13 +61,19 @@ class ArticleController extends AbstractController
      */
     public function show(Article $article)
     {
+        $deleteForm = $this->createDeleteForm($article);
+        $commentForm = $this->createForm(CommentType::class);
+        $replyForm = $commentForm;
         return $this->render('article/show.html.twig', [
             'article' => $article,
+            'deleteForm' => $deleteForm->createView(),
+            'commentForm' => $commentForm->createView(),
+            'replyFormObject' => $replyForm,
         ]);
     }
 
     /**
-     * @Route("/article/create", name="article.create")
+     * @Route("/article/create", name="article.create", methods={"GET", "POST"})
      * @IsGranted("ROLE_USER")
      *
      * @param Request                $request
@@ -91,6 +98,8 @@ class ArticleController extends AbstractController
             $em->persist($article);
             $em->flush();
 
+            $this->addFlash('success', 'New article created.');
+
             return $this->redirectToRoute('article.preview', [
                 'slug' => $article->getSlug(),
             ]);
@@ -102,7 +111,7 @@ class ArticleController extends AbstractController
     }
 
     /**
-     * @Route("/article/preview/{slug}", name="article.preview", methods="GET")
+     * @Route("/article/{slug}/preview", name="article.preview", methods="GET")
      *
      * @param Article $article
      *
@@ -111,16 +120,19 @@ class ArticleController extends AbstractController
     public function preview(Article $article)
     {
         if ($article->getAuthor() != $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('No access!');
+            throw $this->createAccessDeniedException('Unable to access this page!');
         }
+
+        $deleteForm = $this->createDeleteForm($article);
 
         return $this->render('article/preview.html.twig', [
             'article' => $article,
+            'deleteForm' => $deleteForm->createView(),
         ]);
     }
 
     /**
-     * @Route("/article/publish/{id}", name="article.publish", methods="POST", requirements={"id" = "\d+"})
+     * @Route("/article/{id}/publish", name="article.publish", methods="POST", requirements={"id" = "\d+"})
      *
      * @param Article                $article
      * @param EntityManagerInterface $em
@@ -130,7 +142,7 @@ class ArticleController extends AbstractController
     public function publish(Article $article, EntityManagerInterface $em)
     {
         if ($article->getAuthor() != $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('No access!');
+            throw $this->createAccessDeniedException('Unable to access this page!');
         }
 
         $article->setIsPublic(true);
@@ -145,7 +157,7 @@ class ArticleController extends AbstractController
     }
 
     /**
-     * @Route("/article/edit/{slug}", name="article.edit")
+     * @Route("/article/{slug}/edit", name="article.edit", methods={"GET", "POST"})
      *
      * @param Article                $article
      * @param Request                $request
@@ -157,7 +169,7 @@ class ArticleController extends AbstractController
     public function edit(Article $article, Request $request, FileUploader $fileUploader, EntityManagerInterface $em)
     {
         if ($article->getAuthor() != $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('No access!');
+            throw $this->createAccessDeniedException('Unable to access this page!');
         }
 
         $form = $this->createForm(ArticleType::class, $article);
@@ -176,6 +188,8 @@ class ArticleController extends AbstractController
 
             $em->flush();
 
+            $this->addFlash('success', 'Edited successfully.');
+
             $redirectRoute = $article->getIsPublic() ? 'article.show' : 'article.preview';
 
             return $this->redirectToRoute($redirectRoute, [
@@ -186,5 +200,45 @@ class ArticleController extends AbstractController
         return $this->render('article/edit.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/article/{slug}/delete", name="article.delete", methods="DELETE")
+     *
+     * @param Article                $article
+     * @param Request                $request
+     * @param EntityManagerInterface $em
+     *
+     * @return RedirectResponse
+     */
+    public function delete(Article $article, Request $request, EntityManagerInterface $em)
+    {
+        if ($article->getAuthor() != $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Unable to access this page!');
+        }
+
+        $form = $this->createDeleteForm($article);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->remove($article);
+            $em->flush();
+            $this->addFlash('success', 'Deleted successfully.');
+        }
+
+        return $this->redirectToRoute('article.list');
+    }
+
+    /**
+     * @param Article $article
+     *
+     * @return FormInterface
+     */
+    public function createDeleteForm(Article $article)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('article.delete', ['slug' => $article->getSlug()]))
+            ->setMethod('DELETE')
+            ->getForm();
     }
 }

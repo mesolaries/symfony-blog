@@ -17,7 +17,7 @@
         <!-- Author -->
         <p class="lead">
             by
-            <a href="#">{{ article.author.name }} <small>@{{ article.author.username }}</small></a>
+            {{ article.author.name }} <a href="#"><small>@{{ article.author.username }}</small></a>
         </p>
 
         <hr>
@@ -35,58 +35,107 @@
         <p>
             {{ article.content|raw }}
         </p>
+        <hr>
+        {% if article.author == app.user or is_granted('ROLE_ADMIN') %}
+            <a class="btn btn-outline-warning" href="{{ path('article.edit', {slug: article.slug}) }}">Edit</a>
+            {{ form_start(deleteForm, {'attr': {'class': 'd-inline-block'}}) }}
+            {{ form_widget(deleteForm) }}
+            <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">Delete</button>
+            {{ form_end(deleteForm) }}
+        {% endif %}
 
         <hr>
 
-        <!-- Comments Form -->
-        <div class="card my-4">
-            <h5 class="card-header">Leave a Comment:</h5>
-            <div class="card-body">
-                <form>
+        {% if is_granted('ROLE_USER') %}
+            <!-- Comments Form -->
+            <div class="card my-4">
+                <h5 class="card-header">Leave a Comment:</h5>
+                <div class="card-body">
+                    {{ form_start(commentForm, {'action': path('comment.add', {slug: article.slug})}) }}
                     <div class="form-group">
-                        <textarea class="form-control" rows="3"></textarea>
+                        {{ form_widget(commentForm) }}
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Single Comment -->
-        <div class="media mb-4">
-            <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
-            <div class="media-body">
-                <h5 class="mt-0">Commenter Name</h5>
-                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-            </div>
-        </div>
-
-        <!-- Comment with nested comments -->
-        <div class="media mb-4">
-            <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
-            <div class="media-body">
-                <h5 class="mt-0">Commenter Name</h5>
-                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-
-                <div class="media mt-4">
-                    <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
-                    <div class="media-body">
-                        <h5 class="mt-0">Commenter Name</h5>
-                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                    </div>
+                    <button type="submit" class="btn btn-primary">Comment</button>
+                    {{ form_end(commentForm) }}
                 </div>
-
-                <div class="media mt-4">
-                    <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
-                    <div class="media-body">
-                        <h5 class="mt-0">Commenter Name</h5>
-                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                    </div>
-                </div>
-
             </div>
-        </div>
+            <!-- End comments form -->
+        {% endif %}
+
+        {% for comment in article.comment %}
+            {% set replyForm = replyFormObject.createView %}
+            {% if comment.parent is null %}
+            <!-- Comments -->
+            <div class="media mb-4">
+                <img class="d-flex mr-3 rounded-circle" src="{{ comment.author.picture is null ? 'http://placehold.it/50x50' : asset(articles_web_dir ~ '/' ~ comment.author.picture) }}" alt="">
+                <div class="media-body">
+                    <h5 class="my-0">{{ comment.author.name }} <small><a href="#">@{{ comment.author.username }}</a></small></h5>
+                    <small class="text-secondary">{{ comment.createdAt.format('F d, Y \\a\\t H:i') }}</small>
+                    <p class="p-0 m-0">
+                        {{ comment.content }}
+                    </p>
+
+                    {% if is_granted('ROLE_USER') %}
+                        <button class="comment-reply btn btn-sm btn-link p-0">Reply</button>
+                        {% if app.user == comment.author %}
+                            <!-- Comment remove form -->
+                            <form action="{{ path('comment.delete', {id: comment.id}) }}" method="post" class="d-inline">
+                                <input type="hidden" name="_method" value="delete">
+                                <input type="hidden" name="token" value="{{ csrf_token(comment.id ~ 'delete-comment') }}">
+                                <button class="btn btn-sm btn-link text-danger p-0">Remove</button>
+                            </form>
+                            <!-- End comment remove form -->
+                        {% endif %}
+
+                        <!-- Comment reply form -->
+                        {{ form_start(replyForm, {'action': path('comment.reply', {id: comment.id}), 'attr': {'class': 'd-none'}}) }}
+                        <div class="form-group">
+                            {{ form_widget(replyForm) }}
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary">Reply</button>
+                        {{ form_end(replyForm) }}
+                        <!-- End comment reply form -->
+                    {% endif %}
+
+                    <!-- Comment replies -->
+                    {% for reply in comment.reply  %}
+                        <div class="media mt-4">
+                            <img class="d-flex mr-3 rounded-circle" src="{{ reply.author.picture is null ? 'http://placehold.it/50x50' : asset(articles_web_dir ~ '/' ~ reply.author.picture) }}" alt="">
+                            <div class="media-body">
+                                <h5 class="my-0">{{ reply.author.name }} <small><a href="#">@{{ reply.author.username }}</a></small></h5>
+                                <small class="text-secondary">{{ comment.createdAt.format('F d, Y \\a\\t H:i') }}</small>
+                                <p class="p-0 m-0">
+                                    {{ reply.content }}
+                                </p>
+                                {% if is_granted('ROLE_ADMIN') or app.user == reply.author %}
+                                    <!-- Comment remove form -->
+                                    <form action="{{ path('comment.delete', {id: reply.id}) }}" method="post" class="d-inline">
+                                        <input type="hidden" name="_method" value="delete">
+                                        <input type="hidden" name="token" value="{{ csrf_token(reply.id ~ 'delete-comment') }}">
+                                        <button class="btn btn-sm btn-link text-danger p-0">Remove</button>
+                                    </form>
+                                    <!-- End comment remove form -->
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <!-- End comment replies -->
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
 
     </div>
 
     {{ include('template_parts/sidebar/_sidebar.html.twig') }}
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $('.comment-reply').on('click', function(e) {
+            e.preventDefault();
+           $(this).siblings('form').removeClass('d-none');
+           $(this).addClass('d-none');
+        });
+    </script>
 {% endblock %}

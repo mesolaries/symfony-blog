@@ -38,14 +38,19 @@
 
         <hr>
 
-        <form action="{{ path('article.publish', {id: article.id}) }}" method="post">
+        <form action="{{ path('article.publish', {id: article.id}) }}" method="post" class="d-inline-block">
             <div class="form-group">
-                <input type="hidden" name="_method" value="POST">
                 <input type="hidden" name="token" value="{{ csrf_token(article.id ~ 'publish') }}"/>
                 <button type="submit" class="btn btn-outline-primary">Publish</button>
-                <a class="btn btn-outline-warning" href="{{ path('article.edit', {slug: article.slug}) }}">Edit</a>
             </div>
         </form>
+
+        <a class="btn btn-outline-warning" href="{{ path('article.edit', {slug: article.slug}) }}">Edit</a>
+
+        {{ form_start(deleteForm, {'attr': {'class': 'd-inline-block'}}) }}
+        {{ form_widget(deleteForm) }}
+        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">Delete</button>
+        {{ form_end(deleteForm) }}
 
     </div>
 
