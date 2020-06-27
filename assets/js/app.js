@@ -13,6 +13,9 @@ import $ from 'jquery';
 
 global.$ = global.jQuery = $;
 
+// Bootstrap
 require('bootstrap');
 
-console.log('Hello Webpack Encore! Edit me in assets/js/app.js');
+// Font awesome
+require('@fortawesome/fontawesome-free/css/all.min.css');
+require('@fortawesome/fontawesome-free/js/all.min.js');

@@ -20,8 +20,11 @@
         </div>
 
         {% for message in app.flashes('success') %}
-            <div class="alert alert-success position-absolute" role="alert" style="bottom: 0; right: 0;">
+            <div class="alert alert-success alert-dismissible fade show position-fixed" role="alert" style="bottom: 1rem; right: 1rem;">
                 {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
         {% endfor %}
 

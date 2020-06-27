@@ -4,9 +4,11 @@
     <div class="card-body">
         <form action="{{ path('search') }}" method="GET">
             <div class="input-group">
-                <input type="text" class="form-control search-text" name="q" placeholder="Search for...">
+                <input type="text" class="form-control search-text" name="q" placeholder="Search...">
                 <span class="input-group-btn">
-                    <button class="btn btn-secondary search-submit" type="submit">Go!</button>
+                    <button class="btn btn-secondary search-submit" type="submit">
+                        <span class="fas fa-search"></span>
+                    </button>
                 </span>
             </div>
         </form>
