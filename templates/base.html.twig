@@ -28,6 +28,15 @@
             </div>
         {% endfor %}
 
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger alert-dismissible fade show position-fixed" role="alert" style="bottom: 1rem; right: 1rem;">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+
         {% include 'template_parts/_footer.html.twig' %}
 
         {% block javascripts %}

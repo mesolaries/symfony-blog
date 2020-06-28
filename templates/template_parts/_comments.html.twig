@@ -28,6 +28,18 @@
                         </p>
 
                         {% if is_granted('ROLE_USER') %}
+
+                            <small class="text-secondary comment-like-count">{{ comment.likes.count }}</small>
+
+                            {% for like in comment.likes | filter((c) => c in app.user.likes) %}
+                                {% if like in app.user.likes %}
+                                    <button class="comment-unlike btn btn-sm btn-link p-0" data-id="{{ like.id }}">Unlike</button>
+                                    {% set break = true %}
+                                {% endif %}
+                            {% else %}
+                                <button class="comment-like btn btn-sm btn-link p-0" data-id="{{ comment.id }}">Like</button>
+                            {% endfor %}
+
                             <button class="comment-reply btn btn-sm btn-link p-0">Reply</button>
                             {% if app.user == comment.author %}
                                 <!-- Comment remove form -->
@@ -59,6 +71,20 @@
                                     <p class="p-0 m-0">
                                         {{ reply.content }}
                                     </p>
+
+                                    {% if is_granted('ROLE_USER') %}
+                                        <small class="text-secondary comment-like-count">{{ reply.likes.count }}</small>
+
+                                        {% for like in reply.likes | filter((c) => c in app.user.likes) %}
+                                            {% if like in app.user.likes %}
+                                                <button class="comment-unlike btn btn-sm btn-link p-0" data-id="{{ like.id }}">Unlike</button>
+                                                {% set break = true %}
+                                            {% endif %}
+                                        {% else %}
+                                            <button class="comment-like btn btn-sm btn-link p-0" data-id="{{ reply.id }}">Like</button>
+                                        {% endfor %}
+                                    {% endif %}
+
                                     {% if is_granted('ROLE_ADMIN') or app.user == reply.author %}
                                         <!-- Comment remove form -->
                                         <form action="{{ path('comment.delete', {id: reply.id}) }}" method="post" class="d-inline">
