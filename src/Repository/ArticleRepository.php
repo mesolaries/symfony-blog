@@ -100,8 +100,6 @@ class ArticleRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('a')
             ->innerJoin('a.tag', 't')
-            ->addSelect('t')
-            // ->innerJoin('a.tag', 't', 'WITH', 't.id = :tag')
             ->where('t.id = :tag')
             ->andWhere('a.isPublic = :isPublic')
             ->setParameter('tag', $tag)
