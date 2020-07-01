@@ -73,6 +73,12 @@ class ProfileController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPicture($picture);
+
+            if ((int)$request->get('_deletePicture')) {
+                $fileUploader->remove($user->getPicture());
+                $user->setPicture(null);
+            }
+
             $picture = $form['picture']->getData();
             if ($picture instanceof UploadedFile) {
                 $pictureFilename = $fileUploader->upload($picture);

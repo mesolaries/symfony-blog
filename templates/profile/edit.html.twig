@@ -11,7 +11,9 @@
 {% block _user_picture_widget %}
     <div class="mb-2">
         {% if form.vars.data %}
-            <img class="media-object" src="{{ asset(web_dir ~ '/' ~ form.vars.data.filename) }}">
+            <img id="profile-picture" class="media-object" src="{{ asset(web_dir ~ '/' ~ form.vars.data.filename) }}">
+            <input id="delete-picture" type="hidden" name="_deletePicture" value="0">
+            <button id="delete-picture-button" class="btn btn-link text-danger d-block p-0">Remove picture</button>
         {% endif %}
     </div>
 
@@ -33,4 +35,16 @@
         {{ form_end(form) }}
     </div>
     {{ include('template_parts/sidebar/_sidebar.html.twig') }}
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            $('#delete-picture-button').on('click', function () {
+                $('#delete-picture').val(1);
+                $('#profile-picture').remove();
+                $(this).remove();
+            });
+        });
+    </script>
 {% endblock %}
