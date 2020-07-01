@@ -27,7 +27,7 @@
                             {{ app.user.name }}
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="#">Profile</a>
+                            <a class="dropdown-item" href="{{ path('profile', {username: app.user.username}) }}">Profile</a>
                             <a class="dropdown-item" href="{{ path('article.create') }}">New post</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>

@@ -5,8 +5,10 @@ namespace App\Repository;
 use App\Entity\Article;
 use App\Entity\Category;
 use App\Entity\Tag;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -59,6 +61,23 @@ class ArticleRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * @param string $slug
+     *
+     * @return int|mixed|string|null
+     * @throws NonUniqueResultException
+     */
+    public function findPrivateArticle(string $slug)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.slug = :slug')
+            ->andWhere('a.isPublic = :isPublic')
+            ->setParameter('slug', $slug)
+            ->setParameter('isPublic', false)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function findPublicArticlesBySearchQuery(string $query)
     {
         return $this->createQueryBuilder('a')
@@ -87,6 +106,31 @@ class ArticleRepository extends ServiceEntityRepository
             ->andWhere('a.isPublic = :isPublic')
             ->setParameter('tag', $tag)
             ->setParameter('isPublic', true);
+    }
+
+    public function findPublicArticlesByUserQuery(User $user)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.author = :username')
+            ->andWhere('a.isPublic = :isPublic')
+            ->setParameter('username', $user)
+            ->setParameter('isPublic', true);
+    }
+
+    public function findPrivateArticlesByUserQuery(User $user)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.author = :username')
+            ->andWhere('a.isPublic = :isPublic')
+            ->setParameter('username', $user)
+            ->setParameter('isPublic', false);
+    }
+
+    public function findArticlesByUserQuery(User $user)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.author = :username')
+            ->setParameter('username', $user);
     }
 
     // /**

@@ -2,4 +2,4 @@ knp_paginator:
     page_range: 5
     template:
         pagination: '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig'
-        sortable: '@KnpPaginator/Pagination/twitter_bootstrap_v3_sortable_link.html.twig'
+        sortable: '/template_parts/_sorting.html.twig'

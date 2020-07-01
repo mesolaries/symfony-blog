@@ -39,6 +39,11 @@
                 <div class="card-footer text-muted">
                     Posted on {{ article.publishedAt.format('F d, Y') }} by
                     <a href="#">{{ article.author.name }} <small>@{{ article.author.username }}</small></a>
+                    <span class="float-right">
+                        <i class="fas fa-thumbs-up"></i> {{ article.likes.count }}
+                        &nbsp;
+                        <i class="fas fa-comment"></i> {{ article.comment.count }}
+                    </span>
                 </div>
             </div>
         {% endfor %}

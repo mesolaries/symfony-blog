@@ -113,6 +113,8 @@ class ArticleController extends AbstractController
     /**
      * @Route("/article/{slug}/preview", name="article.preview", methods="GET")
      *
+     * @Entity("article", expr="repository.findPrivateArticle(slug)")
+     *
      * @param Article $article
      *
      * @return Response

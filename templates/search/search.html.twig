@@ -20,10 +20,8 @@
                 Sort by:
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                {{ knp_pagination_sortable(articles, 'Title A-Z', 'a.title', {'class': 'dropdown-item'}, {'direction': 'ASC'}) }}
-                {{ knp_pagination_sortable(articles, 'Title Z-A', 'a.title', {'class': 'dropdown-item'}, {'direction': 'DESC'}) }}
-                {{ knp_pagination_sortable(articles, 'Date Ascending', 'a.publishedAt', {'class': 'dropdown-item'}, {'direction': 'ASC'}) }}
-                {{ knp_pagination_sortable(articles, 'Date Descending', 'a.publishedAt', {'class': 'dropdown-item'}, {'direction': 'DESC'}) }}
+                {{ knp_pagination_sortable(articles, 'Title', 'a.title', {'class': 'dropdown-item'}) }}
+                {{ knp_pagination_sortable(articles, 'Date', 'a.publishedAt', {'class': 'dropdown-item'}) }}
             </div>
         </div>
 
@@ -49,6 +47,11 @@
                 <div class="card-footer text-muted">
                     Posted on {{ article.publishedAt.format('F d, Y') }} by
                     <a href="#">{{ article.author.name }} <small>@{{ article.author.username }}</small></a>
+                    <span class="float-right">
+                        <i class="fas fa-thumbs-up"></i> {{ article.likes.count }}
+                        &nbsp;
+                        <i class="fas fa-comment"></i> {{ article.comment.count }}
+                    </span>
                 </div>
             </div>
         {% endfor %}

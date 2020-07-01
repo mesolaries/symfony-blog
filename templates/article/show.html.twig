@@ -17,7 +17,7 @@
         <!-- Author -->
         <p class="lead">
             by
-            {{ article.author.name }} <a href="#"><small>@{{ article.author.username }}</small></a>
+            {{ article.author.name }} <a href="{{ path('profile', {username: article.author.username}) }}"><small>@{{ article.author.username }}</small></a>
         </p>
 
         <hr>
