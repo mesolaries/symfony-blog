@@ -25,7 +25,7 @@ class RegistrationFormType extends AbstractType
                 'attr' => ['placeholder' => 'Name'],
                 'constraints' => [
                     new NotBlank(),
-                    new Length(['min' => 4]),
+                    new Length(['min' => 4, 'max' => 255]),
                 ]
             ])
             ->add('email', EmailType::class, [

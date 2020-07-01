@@ -19,7 +19,7 @@
             {% if comment.parent is null %}
                 <!-- Comments -->
                 <div class="media mb-4">
-                    <img class="d-flex mr-3 rounded-circle" src="{{ comment.author.picture is null ? 'http://placehold.it/50x50' : asset(articles_web_dir ~ '/' ~ comment.author.picture) }}" alt="">
+                    <img class="d-flex mr-3 rounded-circle" src="{{ comment.author.picture is null ? 'http://placehold.it/50x50' : asset(web_dir ~ '/' ~ comment.author.picture) }}" alt="">
                     <div class="media-body">
                         <h5 class="my-0">{{ comment.author.name }} <small><a href="#">@{{ comment.author.username }}</a></small></h5>
                         <small class="text-secondary">{{ comment.createdAt.format('F d, Y \\a\\t H:i') }}</small>
@@ -64,7 +64,7 @@
                         <!-- Comment replies -->
                         {% for reply in comment.reply|sort((a, b) => b.createdAt <=> a.createdAt)  %}
                             <div class="media mt-4">
-                                <img class="d-flex mr-3 rounded-circle" src="{{ reply.author.picture is null ? 'http://placehold.it/50x50' : asset(articles_web_dir ~ '/' ~ reply.author.picture) }}" alt="">
+                                <img class="d-flex mr-3 rounded-circle" src="{{ reply.author.picture is null ? 'http://placehold.it/50x50' : asset(web_dir ~ '/' ~ reply.author.picture) }}" alt="">
                                 <div class="media-body">
                                     <h5 class="my-0">{{ reply.author.name }} <small><a href="#">@{{ reply.author.username }}</a></small></h5>
                                     <small class="text-secondary">{{ reply.createdAt.format('F d, Y \\a\\t H:i') }}</small>

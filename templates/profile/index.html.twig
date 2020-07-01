@@ -14,13 +14,13 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12 mt-4">
-                    <img class="rounded-circle" src="http://placehold.it/200x200" alt="">
+                    <img class="rounded-circle" src="{{ user.picture is not null ? asset(web_dir ~ '/' ~ user.picture) : 'http://placehold.it/200x200' }}" alt="">
                     <div class="d-inline-block pl-4">
                         <h1 class="mb-0">
                             <small>{{ user.name }}</small>
                         </h1>
                         <p class="text-secondary small m-0">@{{ user.username }}</p>
-                        <a class="btn btn-light mt-2" href="#">Edit profile</a>
+                        <a class="btn btn-light mt-2" href="{{ path('profile.edit', {username: user.username}) }}">Edit profile</a>
                     </div>
                 </div>
             </div>
@@ -43,7 +43,7 @@
 {#                        {% set article = article[0] %}#}
                         <!-- Blog Post -->
                         <div class="card mb-4">
-                            <img class="card-img-top" src="{{ article.picture is not null ? asset(articles_web_dir ~ '/' ~ article.picture) : 'http://placehold.it/750x300' }}" alt="Card image cap">
+                            <img class="card-img-top" src="{{ article.picture is not null ? asset(web_dir ~ '/' ~ article.picture) : 'http://placehold.it/750x300' }}" alt="Card image cap">
                             <div class="card-body">
                                 <h2 class="card-title">{{ article.title }}</h2>
                                 <p class="card-text">{{ article.content|slice(0, 250)|striptags|replace({'&nbsp;': ' '}) }}</p>

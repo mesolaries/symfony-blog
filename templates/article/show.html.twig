@@ -28,7 +28,7 @@
         <hr>
 
         <!-- Preview Image -->
-        <img class="img-fluid rounded" src="{{ article.picture is not null ? asset(articles_web_dir ~ '/' ~ article.picture) : 'http://placehold.it/750x300' }}" alt="">
+        <img class="img-fluid rounded" src="{{ article.picture is not null ? asset(web_dir ~ '/' ~ article.picture) : 'http://placehold.it/750x300' }}" alt="">
 
         {% if is_granted('ROLE_USER') %}
             <div class="mt-2">

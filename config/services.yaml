@@ -4,8 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    articles_web_dir: '/uploads/article'
-    articles_uploads_dir: '%kernel.project_dir%/public/uploads/article'
+    web_dir: '/uploads'
+    uploads_dir: '%kernel.project_dir%/public/uploads'
     max_items_per_page: 10
 
 services:
@@ -30,7 +30,7 @@ services:
     # please note that last definitions always *replace* previous ones
     App\Service\FileUploader:
         arguments:
-            $targetDirectory: '%articles_uploads_dir%'
+            $targetDirectory: '%uploads_dir%'
     App\EventListener\ArticleUploadListener:
         arguments: ["@security.token_storage"]
         tags:
