@@ -21,7 +21,7 @@ class TagController extends AbstractController
      */
     public function list(EntityManagerInterface $em)
     {
-        $tags = $em->getRepository(Tag::class)->findAll();
+        $tags = $em->getRepository(Tag::class)->findTopTenWithPublicArticles();
 
         return $this->render('template_parts/sidebar/_tags.html.twig', [
             'tags' => $tags,

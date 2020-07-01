@@ -21,7 +21,7 @@ class CategoryController extends AbstractController
      */
     public function list(EntityManagerInterface $em)
     {
-        $categories = $em->getRepository(Category::class)->findAll();
+        $categories = $em->getRepository(Category::class)->findBy([], ['name' => 'ASC']);
 
         return $this->render('template_parts/sidebar/_categories.html.twig', [
             'categories' => $categories,

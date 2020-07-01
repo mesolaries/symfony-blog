@@ -19,6 +19,19 @@ class TagRepository extends ServiceEntityRepository
         parent::__construct($registry, Tag::class);
     }
 
+    public function findTopTenWithPublicArticles()
+    {
+        return $this->createQueryBuilder('t')
+            ->leftJoin('t.articles', 'a')
+            ->where('a.isPublic = :isPublic')
+            ->setParameter('isPublic', true)
+            ->addSelect('count(a.id) as articleCount')
+            ->groupBy('t.id')
+            ->orderBy('articleCount', 'desc')
+            ->setMaxResults(10)
+            ->getQuery()->getResult();
+    }
+
     // /**
     //  * @return Tag[] Returns an array of Tag objects
     //  */

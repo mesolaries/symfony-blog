@@ -3,22 +3,29 @@
     <h5 class="card-header">Tags</h5>
     <div class="card-body">
         <div class="row">
-            {% set middle = (tags|length / 2 )|round(0, 'ceil') %}
             <div class="col-lg-6">
                 <ul class="list-unstyled mb-0">
-                    {% for tag in tags|slice(0, middle) %}
-                        <li>
-                            <a href="{{ path('tag.show', {slug: tag.slug}) }}">{{ tag.name }}</a>
-                        </li>
+                    {% for tag in tags %}
+                        {% if loop.index is odd %}
+                            {% set articleCount = tag['articleCount'] %}
+                            {% set tag = tag[0] %}
+                            <li>
+                                <a href="{{ path('tag.show', {slug: tag.slug}) }}">{{ tag.name }} <span class="text-muted">({{ articleCount }})</span></a>
+                            </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             </div>
             <div class="col-lg-6">
                 <ul class="list-unstyled mb-0">
-                    {% for tag in tags|slice(middle) %}
-                        <li>
-                            <a href="{{ path('tag.show', {slug: tag.slug}) }}">{{ tag.name }}</a>
-                        </li>
+                    {% for tag in tags %}
+                        {% if loop.index is even %}
+                            {% set articleCount = tag['articleCount'] %}
+                            {% set tag = tag[0] %}
+                            <li>
+                                <a href="{{ path('tag.show', {slug: tag.slug}) }}">{{ tag.name }} <span class="text-muted">({{ articleCount }})</span></a>
+                            </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             </div>

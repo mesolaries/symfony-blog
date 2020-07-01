@@ -3,22 +3,25 @@
     <h5 class="card-header">Categories</h5>
     <div class="card-body">
         <div class="row">
-            {% set middle = (categories|length / 2 )|round(0, 'ceil') %}
             <div class="col-lg-6">
                 <ul class="list-unstyled mb-0">
-                {% for category in categories|slice(0, middle) %}
-                    <li>
-                        <a href="{{ path('category.show', {slug: category.slug}) }}">{{ category.name }}</a>
-                    </li>
+                {% for category in categories %}
+                    {% if loop.index is odd %}
+                        <li>
+                            <a href="{{ path('category.show', {slug: category.slug}) }}">{{ category.name }}</a>
+                        </li>
+                    {% endif %}
                 {% endfor %}
                 </ul>
             </div>
             <div class="col-lg-6">
                 <ul class="list-unstyled mb-0">
-                    {% for category in categories|slice(middle) %}
-                        <li>
-                            <a href="{{ path('category.show', {slug: category.slug}) }}">{{ category.name }}</a>
-                        </li>
+                    {% for category in categories %}
+                        {% if loop.index is even %}
+                            <li>
+                                <a href="{{ path('category.show', {slug: category.slug}) }}">{{ category.name }}</a>
+                            </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             </div>
