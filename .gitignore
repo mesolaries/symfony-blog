@@ -4,6 +4,7 @@
 
 ###> User files ###
 uploads
+!uploads/programming_pic.png
 ###< User files ###
 
 ###> symfony/framework-bundle ###
