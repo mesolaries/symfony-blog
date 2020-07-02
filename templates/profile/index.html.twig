@@ -4,13 +4,11 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/css/article/list.css') }}">
 {% endblock %}
 
 {% block body %}
-    <!-- Blog Entries Column -->
+    <!-- Profile Column -->
     <div class="col-md-8">
-
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12 mt-4">
@@ -40,33 +38,7 @@
                     </div>
                     <hr>
                     {% for article in articles %}
-{#                        {% set article = article[0] %}#}
-                        <!-- Blog Post -->
-                        <div class="card mb-4">
-                            <img class="card-img-top" src="{{ article.picture is not null ? asset(web_dir ~ '/' ~ article.picture) : 'http://placehold.it/750x300' }}" alt="Card image cap">
-                            <div class="card-body">
-                                <h2 class="card-title">{{ article.title }}</h2>
-                                <p class="card-text">{{ article.content|slice(0, 250)|striptags|replace({'&nbsp;': ' '}) }}</p>
-                                <a href="{{ path('article.show', {slug: article.slug}) }}" class="btn btn-primary">Read More &rarr;</a>
-                            </div>
-                            {% if article.isPublic %}
-                                <div class="card-footer text-muted">
-                                    Posted on {{ article.publishedAt.format('F d, Y') }} by
-                                    <a href="#">{{ article.author.name }} <small>@{{ article.author.username }}</small></a>
-                                    <span class="float-right">
-                                        <i class="fas fa-thumbs-up"></i> {{ article.likes.count }}
-                                        &nbsp;
-                                        <i class="fas fa-comment"></i> {{ article.comment.count }}
-                                    </span>
-                                </div>
-                            {% else %}
-                                <div class="card-footer text-muted">
-                                    <span class="badge badge-warning">Draft</span>
-                                    Created on {{ article.createdAt.format('F d, Y') }} by
-                                    <a href="#">{{ article.author.name }} <small>@{{ article.author.username }}</small></a>
-                                </div>
-                            {% endif %}
-                        </div>
+                        {% include("template_parts/article/_post.html.twig") %}
                     {% endfor %}
                 </div>
             </div>

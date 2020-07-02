@@ -4,21 +4,13 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/css/article/show.css') }}">
 {% endblock %}
 
 {% block body %}
     <!-- Post Create Column -->
     <div class="col-lg-8">
         <h1 class="mt-4">Create a new blog post</h1>
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <div class="form-group">
-            <button type="submit" class="btn btn-outline-primary">
-                <span class="fas fa-save"></span> Save
-            </button>
-        </div>
-        {{ form_end(form) }}
+        {% include('template_parts/article/_form.html.twig') with form %}
     </div>
-    {{ include('template_parts/sidebar/_sidebar.html.twig') }}
+    {% include('template_parts/sidebar/_sidebar.html.twig') %}
 {% endblock %}
