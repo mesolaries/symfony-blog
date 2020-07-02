@@ -3,8 +3,8 @@
 ###< IDE files ###
 
 ###> User files ###
-uploads/*
-!uploads/programming_pic.png
+public/uploads/*
+!public/uploads/programming_pic.png
 ###< User files ###
 
 ###> symfony/framework-bundle ###
