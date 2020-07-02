@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit {{ category.name }} category{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <!-- Category Create Column -->
+    <div class="col-lg-8">
+        <h1 class="mt-4">Edit {{ category.name }} category</h1>
+        {% include('template_parts/article/_form.html.twig') with form %}
+    </div>
+    {% include('template_parts/sidebar/_sidebar.html.twig') %}
+{% endblock %}

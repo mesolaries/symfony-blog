@@ -24,6 +24,24 @@
             </div>
         </div>
 
+        {% if is_granted("ROLE_ADMIN") %}
+            <div class="mb-4">
+                Category:
+                <a class="btn btn-light" href="{{ path('category.edit', {slug: category.slug}) }}">
+                    <span class="fas fa-edit"></span>
+                    Edit
+                </a>
+                {{ form_start(deleteForm, {'attr': {'class': 'd-inline-block'}}) }}
+                {{ form_widget(deleteForm) }}
+                <button type="submit" class="btn btn-light text-danger" onclick="return confirm('Are you sure?')">
+                    <span class="fas fa-trash"></span>
+                    Delete
+                </button>
+                {{ form_end(deleteForm) }}
+            </div>
+        {% endif %}
+
+
         {% for article in articles %}
             {% include("template_parts/article/_post.html.twig") %}
         {% endfor %}
