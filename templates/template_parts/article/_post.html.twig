@@ -22,7 +22,11 @@
             {% endfor %}
         </p>
         <p class="card-text">{{ article.content|slice(0, 250)|striptags|replace({'&nbsp;': ' '}) }}</p>
-        <a href="{{ path('article.show', {slug: article.slug}) }}" class="btn btn-primary">Read More &rarr;</a>
+        {% if article.isPublic %}
+            <a href="{{ path('article.show', {slug: article.slug}) }}" class="btn btn-primary">Read More &rarr;</a>
+        {% else %}
+            <a href="{{ path('article.preview', {slug: article.slug}) }}" class="btn btn-primary">Show preview &rarr;</a>
+        {% endif %}
     </div>
     {% if article.isPublic %}
         <div class="card-footer text-muted">
