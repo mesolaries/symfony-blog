@@ -11,7 +11,7 @@
 {% block _article_picture_widget %}
     <div class="mb-2">
         {% if form.vars.data %}
-            <img class="media-object" src="{{ asset(web_dir ~ '/' ~ form.vars.data.filename) }}">
+            <img class="media-object" style="max-width: 100%;" src="{{ asset(web_dir ~ '/' ~ form.vars.data.filename) }}">
         {% endif %}
     </div>
 

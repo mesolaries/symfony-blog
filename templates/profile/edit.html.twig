@@ -11,7 +11,7 @@
 {% block _user_picture_widget %}
     <div class="mb-2">
         {% if form.vars.data %}
-            <img id="profile-picture" class="media-object" src="{{ asset(web_dir ~ '/' ~ form.vars.data.filename) }}">
+            <img id="profile-picture" class="media-object" style="max-width: 100%;" src="{{ asset(web_dir ~ '/' ~ form.vars.data.filename) }}">
             <input id="delete-picture" type="hidden" name="_deletePicture" value="0">
             <button id="delete-picture-button" class="btn btn-link text-danger d-block p-0">Remove picture</button>
         {% endif %}
