@@ -3,7 +3,7 @@
 ###< IDE files ###
 
 ###> User files ###
-uploads
+uploads/*
 !uploads/programming_pic.png
 ###< User files ###
 
