@@ -15,6 +15,7 @@
 {% endif %}
 
         {% for comment in article.comment|sort((a, b) => b.createdAt <=> a.createdAt) %}
+            {% set commentUserLikeId = is_granted('ROLE_USER') and comment.isLikedByUser(app.user) ? comment.isLikedByUser(app.user) : 0 %}
             {% set replyForm = replyFormObject.createView %}
             {% if comment.parent is null %}
                 <!-- Comments -->
@@ -31,14 +32,11 @@
 
                             <small class="text-secondary comment-like-count">{{ comment.likes.count }}</small>
 
-                            {% for like in comment.likes | filter((c) => c in app.user.likes) %}
-                                {% if like in app.user.likes %}
-                                    <button class="comment-unlike btn btn-sm btn-link p-0" data-id="{{ like.id }}">Unlike</button>
-                                    {% set break = true %}
-                                {% endif %}
+                            {% if commentUserLikeId %}
+                                <button class="comment-unlike btn btn-sm btn-link p-0" data-id="{{ commentUserLikeId }}">Unlike</button>
                             {% else %}
                                 <button class="comment-like btn btn-sm btn-link p-0" data-id="{{ comment.id }}">Like</button>
-                            {% endfor %}
+                            {% endif %}
 
                             <button class="comment-reply btn btn-sm btn-link p-0">Reply</button>
                             {% if app.user == comment.author %}
@@ -63,6 +61,7 @@
 
                         <!-- Comment replies -->
                         {% for reply in comment.reply|sort((a, b) => b.createdAt <=> a.createdAt)  %}
+                            {% set replyUserLikeId = is_granted('ROLE_USER') and reply.isLikedByUser(app.user) ? reply.isLikedByUser(app.user) : 0 %}
                             <div class="media mt-4">
                                 <img class="d-flex mr-3 rounded-circle" src="{{ reply.author.picture is null ? 'http://placehold.it/50x50' : asset(web_dir ~ '/' ~ reply.author.picture) }}" alt="">
                                 <div class="media-body">
@@ -74,15 +73,11 @@
 
                                     {% if is_granted('ROLE_USER') %}
                                         <small class="text-secondary comment-like-count">{{ reply.likes.count }}</small>
-
-                                        {% for like in reply.likes | filter((c) => c in app.user.likes) %}
-                                            {% if like in app.user.likes %}
-                                                <button class="comment-unlike btn btn-sm btn-link p-0" data-id="{{ like.id }}">Unlike</button>
-                                                {% set break = true %}
-                                            {% endif %}
+                                        {% if replyUserLikeId %}
+                                            <button class="comment-unlike btn btn-sm btn-link p-0" data-id="{{ replyUserLikeId }}">Unlike</button>
                                         {% else %}
                                             <button class="comment-like btn btn-sm btn-link p-0" data-id="{{ reply.id }}">Like</button>
-                                        {% endfor %}
+                                        {% endif %}
                                     {% endif %}
 
                                     {% if is_granted('ROLE_ADMIN') or app.user == reply.author %}

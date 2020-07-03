@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block body %}
+    {% set userLikeId = is_granted('ROLE_USER') and article.isLikedByUser(app.user) ? article.isLikedByUser(app.user) : 0 %}
     <!-- Post Content Column -->
     <div class="col-lg-8">
 
@@ -32,19 +33,21 @@
         {% if is_granted('ROLE_USER') %}
             <div class="mt-2">
                 <span class="text-secondary article-like-count">{{ article.likes.count }}</span>
-
-                {% for like in article.likes | filter((a) => a in app.user.likes) %}
-                    {% if like in app.user.likes %}
-                        <a href="#" class="article-unlike text-secondary" data-id="{{ like.id }}">
-                            <span class="fas fa-thumbs-up"></span>
-                        </a>
-                        {% set break = true %}
-                    {% endif %}
-                {% else %}
-                    <a href="#" class="article-like text-secondary">
-                        <span class="far fa-thumbs-up"></span>
+                    <a href="#"
+                       class="
+                            text-secondary
+                            {{
+                                userLikeId
+                                ? 'article-unlike'
+                                : 'article-like'
+                            }}
+                        "
+                       data-id="{{ userLikeId }}"
+                    >
+                        <span
+                                class="{{ userLikeId ? 'fas' : 'far' }} fa-thumbs-up">
+                        </span>
                     </a>
-                {% endfor %}
 
             </div>
         {% endif %}
@@ -99,6 +102,9 @@
                 let button = $(this);
                 button.find('[data-fa-i2svg]').removeClass('far').addClass('fas');
                 button.removeClass('article-like');
+                let currentLikeCountSelector = $('.article-like-count');
+                let currentLikeCount = currentLikeCountSelector.html();
+                currentLikeCountSelector.html(++currentLikeCount);
                 $.ajax({
                     url: '{{ path('like.article', {slug: article.slug}) }}',
                     type: 'POST',
@@ -118,6 +124,9 @@
                 let button = $(this);
                 button.find('[data-fa-i2svg]').removeClass('fas').addClass('far');
                 button.removeClass('article-unlike');
+                let currentLikeCountSelector = $('.article-like-count');
+                let currentLikeCount = currentLikeCountSelector.html();
+                currentLikeCountSelector.html(--currentLikeCount);
                 $.ajax({
                     url: '{{ path('like.remove', {"id": "like_id"}) }}'.replace('like_id', button.attr('data-id')),
                     type: 'POST',
@@ -135,6 +144,9 @@
                 e.preventDefault();
                 let button = $(this);
                 button.removeClass('comment-like');
+                let currentLikeCount = button.siblings('.comment-like-count').html();
+                button.siblings('.comment-like-count').html(++currentLikeCount);
+                button.text('Unlike');
                 $.ajax({
                     url: '{{ path('like.comment', {"id": "comment_id"}) }}'.replace('comment_id', button.attr('data-id')),
                     type: 'POST',
@@ -145,7 +157,6 @@
                         button.siblings('.comment-like-count').html(data.likeCount);
                         button.attr('data-id', data.likeId);
                         button.addClass('comment-unlike');
-                        button.text('Unlike');
                     }
                 });
             });
@@ -154,6 +165,9 @@
                 e.preventDefault();
                 let button = $(this);
                 button.removeClass('comment-unlike');
+                let currentLikeCount = button.siblings('.comment-like-count').html();
+                button.siblings('.comment-like-count').html(--currentLikeCount);
+                button.text('Like');
                 $.ajax({
                     url: '{{ path('like.remove', {"id": "like_id"}) }}'.replace('like_id', button.attr('data-id')),
                     type: 'POST',
@@ -164,7 +178,6 @@
                         button.siblings('.comment-like-count').html(data.likeCount);
                         button.attr('data-id', data.commentId);
                         button.addClass('comment-like');
-                        button.text('Like');
                     }
                 });
             });

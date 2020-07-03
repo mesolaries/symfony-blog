@@ -1,4 +1,5 @@
 <!-- Blog Post -->
+{% set userLikeId = is_granted('ROLE_USER') and article.isLikedByUser(app.user) ? article.isLikedByUser(app.user) : 0 %}
 <div class="card mb-4">
     <img class="card-img-top"
          src="{{ article.picture is not null ? asset(web_dir ~ '/' ~ article.picture) : 'http://placehold.it/750x300' }}"
@@ -33,9 +34,15 @@
             Posted on {{ article.publishedAt.format('F d, Y') }} by
             <a href="#">{{ article.author.name }} <small>@{{ article.author.username }}</small></a>
             <span class="float-right">
-                <i class="fas fa-thumbs-up"></i> {{ article.likes.count }}
+                <i class="
+                    fas fa-thumbs-up
+                    {{ userLikeId ? 'text-primary' : '' }}
+                ">
+                </i>
+                {{ article.likes.count }}
                 &nbsp;
-                <i class="fas fa-comment"></i> {{ article.comment.count }}
+                <i class="fas fa-comment"></i>
+                {{ article.comment.count }}
             </span>
         </div>
     {% else %}

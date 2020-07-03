@@ -198,4 +198,18 @@ class Comment
     {
         $this->createdAt = new \DateTime();
     }
+
+    public function isLikedByUser(User $user)
+    {
+        $like = $this->getLikes()
+            ->filter(
+                function (Like $like) use ($user) {
+                    return $like->getAuthor() === $user;
+                }
+            );
+
+        if (count($like)) return $like[0]->getId();
+
+        return false;
+    }
 }
