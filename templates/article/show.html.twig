@@ -8,6 +8,7 @@
 
 {% block body %}
     {% set userLike = is_granted('ROLE_USER') ? article.getLikeByUser(app.user).first : 0 %}
+    {% set userLikeId = userLike ? userLike.id : 0 %}
     <!-- Post Content Column -->
     <div class="col-lg-8">
 
@@ -42,7 +43,7 @@
                                 : 'article-like'
                             }}
                         "
-                       data-id="{{ userLike.id }}"
+                       data-id="{{ userLikeId }}"
                     >
                         <span
                                 class="{{ userLike ? 'fas' : 'far' }} fa-thumbs-up">
