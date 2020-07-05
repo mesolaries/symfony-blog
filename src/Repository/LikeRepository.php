@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Like;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,6 +18,20 @@ class LikeRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Like::class);
+    }
+
+    public static function createArticleLikedByUserCriteria($article, $user)
+    {
+        return Criteria::create()
+            ->where(Criteria::expr()->eq('article', $article))
+            ->where(Criteria::expr()->eq('author', $user));
+    }
+
+    public static function createCommentLikedByUserCriteria($comment, $user)
+    {
+        return Criteria::create()
+            ->where(Criteria::expr()->eq('comment', $comment))
+            ->where(Criteria::expr()->eq('author', $user));
     }
 
     // /**

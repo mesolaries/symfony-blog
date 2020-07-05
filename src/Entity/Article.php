@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use App\Repository\LikeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -51,17 +52,17 @@ class Article
     /**
      * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="articles")
      */
-    private $tag;
+    private $tags;
 
     /**
-     * @ORM\OneToMany(targetEntity=Like::class, mappedBy="article")
+     * @ORM\OneToMany(targetEntity=Like::class, mappedBy="article", fetch="EXTRA_LAZY")
      */
     private $likes;
 
     /**
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="article", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="article", orphanRemoval=true, fetch="EXTRA_LAZY")
      */
-    private $comment;
+    private $comments;
 
     /**
      * @ORM\Column(type="datetime")
@@ -87,9 +88,9 @@ class Article
 
     public function __construct()
     {
-        $this->tag = new ArrayCollection();
+        $this->tags = new ArrayCollection();
         $this->likes = new ArrayCollection();
-        $this->comment = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -160,15 +161,15 @@ class Article
     /**
      * @return Collection|Tag[]
      */
-    public function getTag(): Collection
+    public function getTags(): Collection
     {
-        return $this->tag;
+        return $this->tags;
     }
 
     public function addTag(Tag $tag): self
     {
-        if (!$this->tag->contains($tag)) {
-            $this->tag[] = $tag;
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
         }
 
         return $this;
@@ -176,8 +177,8 @@ class Article
 
     public function removeTag(Tag $tag): self
     {
-        if ($this->tag->contains($tag)) {
-            $this->tag->removeElement($tag);
+        if ($this->tags->contains($tag)) {
+            $this->tags->removeElement($tag);
         }
 
         return $this;
@@ -217,15 +218,15 @@ class Article
     /**
      * @return Collection|Comment[]
      */
-    public function getComment(): Collection
+    public function getComments(): Collection
     {
-        return $this->comment;
+        return $this->comments;
     }
 
     public function addComment(Comment $comment): self
     {
-        if (!$this->comment->contains($comment)) {
-            $this->comment[] = $comment;
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
             $comment->setArticle($this);
         }
 
@@ -234,8 +235,8 @@ class Article
 
     public function removeComment(Comment $comment): self
     {
-        if ($this->comment->contains($comment)) {
-            $this->comment->removeElement($comment);
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
             // set the owning side to null (unless already changed)
             if ($comment->getArticle() === $this) {
                 $comment->setArticle(null);
@@ -301,17 +302,10 @@ class Article
         $this->createdAt = new \DateTime();
     }
 
-    public function isLikedByUser(User $user)
+    public function getLikeByUser($user)
     {
-        $like = $this->getLikes()
-            ->filter(
-                function (Like $like) use ($user) {
-                    return $like->getAuthor() === $user;
-                }
-            );
+        $criteria = LikeRepository::createArticleLikedByUserCriteria($this, $user);
 
-            if (count($like)) return $like[0]->getId();
-
-        return false;
+        return $this->likes->matching($criteria);
     }
 }

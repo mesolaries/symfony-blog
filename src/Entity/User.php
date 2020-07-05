@@ -65,17 +65,17 @@ class User implements UserInterface
     private $picture;
 
     /**
-     * @ORM\OneToMany(targetEntity=Article::class, mappedBy="author", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Article::class, mappedBy="author", orphanRemoval=true, fetch="EXTRA_LAZY")
      */
     private $articles;
 
     /**
-     * @ORM\OneToMany(targetEntity=Like::class, mappedBy="author", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Like::class, mappedBy="author", orphanRemoval=true, fetch="EXTRA_LAZY")
      */
     private $likes;
 
     /**
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="author", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="author", orphanRemoval=true, fetch="EXTRA_LAZY")
      */
     private $comments;
 

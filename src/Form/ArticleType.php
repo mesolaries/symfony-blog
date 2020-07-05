@@ -59,12 +59,12 @@ class ArticleType extends AbstractType
                     new NotBlank(),
                 ],
             ])
-            ->add('tag', TextType::class, [
+            ->add('tags', TextType::class, [
                 'required' => false,
             ])
         ;
 
-        $builder->get('tag')
+        $builder->get('tags')
             ->addModelTransformer($this->transformer);
 
         $builder->get('picture')

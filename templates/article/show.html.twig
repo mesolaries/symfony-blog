@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block body %}
-    {% set userLikeId = is_granted('ROLE_USER') and article.isLikedByUser(app.user) ? article.isLikedByUser(app.user) : 0 %}
+    {% set userLike = is_granted('ROLE_USER') ? article.getLikeByUser(app.user).first : 0 %}
     <!-- Post Content Column -->
     <div class="col-lg-8">
 
@@ -37,15 +37,15 @@
                        class="
                             text-secondary
                             {{
-                                userLikeId
+                                userLike
                                 ? 'article-unlike'
                                 : 'article-like'
                             }}
                         "
-                       data-id="{{ userLikeId }}"
+                       data-id="{{ userLike.id }}"
                     >
                         <span
-                                class="{{ userLikeId ? 'fas' : 'far' }} fa-thumbs-up">
+                                class="{{ userLike ? 'fas' : 'far' }} fa-thumbs-up">
                         </span>
                     </a>
 

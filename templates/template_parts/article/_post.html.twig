@@ -1,5 +1,5 @@
 <!-- Blog Post -->
-{% set userLikeId = is_granted('ROLE_USER') and article.isLikedByUser(app.user) ? article.isLikedByUser(app.user) : 0 %}
+{% set userLike = is_granted('ROLE_USER') ? article.getLikeByUser(app.user).first : 0 %}
 <div class="card mb-4">
     <img class="card-img-top"
          src="{{ article.picture is not null ? asset(web_dir ~ '/' ~ article.picture) : 'http://placehold.it/750x300' }}"
@@ -14,7 +14,7 @@
             </a>
         </p>
         <p class="mb-1">
-            {% for tag in article.tag %}
+            {% for tag in article.tags %}
                 <a class="text-decoration-none" href="{{ path('tag.show', {'slug': tag.slug}) }}">
                     <span class="badge badge-secondary">
                         {{ tag.name }}
@@ -36,13 +36,13 @@
             <span class="float-right">
                 <i class="
                     fas fa-thumbs-up
-                    {{ userLikeId ? 'text-primary' : '' }}
+                    {{ userLike ? 'text-primary' : '' }}
                 ">
                 </i>
                 {{ article.likes.count }}
                 &nbsp;
                 <i class="fas fa-comment"></i>
-                {{ article.comment.count }}
+                {{ article.comments.count }}
             </span>
         </div>
     {% else %}

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CommentRepository;
+use App\Repository\LikeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -33,22 +34,22 @@ class Comment
     private $author;
 
     /**
-     * @ORM\OneToMany(targetEntity=Like::class, mappedBy="comment")
+     * @ORM\OneToMany(targetEntity=Like::class, mappedBy="comment", fetch="EXTRA_LAZY")
      */
     private $likes;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Comment::class, inversedBy="reply")
+     * @ORM\ManyToOne(targetEntity=Comment::class, inversedBy="replies")
      */
     private $parent;
 
     /**
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="parent", orphanRemoval=true)
      */
-    private $reply;
+    private $replies;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Article::class, inversedBy="comment")
+     * @ORM\ManyToOne(targetEntity=Article::class, inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
      */
     private $article;
@@ -61,7 +62,7 @@ class Comment
     public function __construct()
     {
         $this->likes = new ArrayCollection();
-        $this->reply = new ArrayCollection();
+        $this->replies = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -139,15 +140,15 @@ class Comment
     /**
      * @return Collection|self[]
      */
-    public function getReply(): Collection
+    public function getReplies(): Collection
     {
-        return $this->reply;
+        return $this->replies;
     }
 
     public function addReply(self $reply): self
     {
-        if (!$this->reply->contains($reply)) {
-            $this->reply[] = $reply;
+        if (!$this->replies->contains($reply)) {
+            $this->replies[] = $reply;
             $reply->setParent($this);
         }
 
@@ -156,8 +157,8 @@ class Comment
 
     public function removeReply(self $reply): self
     {
-        if ($this->reply->contains($reply)) {
-            $this->reply->removeElement($reply);
+        if ($this->replies->contains($reply)) {
+            $this->replies->removeElement($reply);
             // set the owning side to null (unless already changed)
             if ($reply->getParent() === $this) {
                 $reply->setParent(null);
@@ -199,17 +200,10 @@ class Comment
         $this->createdAt = new \DateTime();
     }
 
-    public function isLikedByUser(User $user)
+    public function getLikeByUser($user)
     {
-        $like = $this->getLikes()
-            ->filter(
-                function (Like $like) use ($user) {
-                    return $like->getAuthor() === $user;
-                }
-            );
+        $criteria = LikeRepository::createCommentLikedByUserCriteria($this, $user);
 
-        if (count($like)) return $like[0]->getId();
-
-        return false;
+        return $this->likes->matching($criteria);
     }
 }

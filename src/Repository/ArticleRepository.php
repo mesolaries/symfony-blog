@@ -8,7 +8,6 @@ use App\Entity\Tag;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -99,7 +98,7 @@ class ArticleRepository extends ServiceEntityRepository
     public function findPublicArticlesByTagQuery(Tag $tag)
     {
         return $this->createQueryBuilder('a')
-            ->innerJoin('a.tag', 't')
+            ->innerJoin('a.tags', 't')
             ->where('t.id = :tag')
             ->andWhere('a.isPublic = :isPublic')
             ->setParameter('tag', $tag)

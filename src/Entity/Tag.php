@@ -27,7 +27,7 @@ class Tag
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Article::class, mappedBy="tag")
+     * @ORM\ManyToMany(targetEntity=Article::class, mappedBy="tags", fetch="EXTRA_LAZY")
      */
     private $articles;
 

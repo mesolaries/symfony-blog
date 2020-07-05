@@ -25,14 +25,14 @@ class TagToStringTransformer implements DataTransformerInterface
     }
 
 
-    public function transform($tag)
+    public function transform($tags)
     {
-        if (null === $tag) {
+        if (null === $tags) {
             return '';
         }
 
-        $tag = $tag->toArray();
-        return implode(', ', $tag);
+        $tags = $tags->toArray();
+        return implode(', ', $tags);
     }
 
     /**
