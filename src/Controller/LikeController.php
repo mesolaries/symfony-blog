@@ -39,7 +39,11 @@ class LikeController extends AbstractController
 
         $likeCount = $article->getLikes()->count();
 
-        return new JsonResponse(['likeCount' => $likeCount, 'likeId' => $like->getId()]);
+        return new JsonResponse([
+            'likeCount' => $likeCount,
+            'likeId' => $like->getId(),
+            'href' => $this->generateUrl('like.remove', ['id' => $like->getId()]),
+        ]);
     }
 
     /**
@@ -63,7 +67,11 @@ class LikeController extends AbstractController
 
         $likeCount = $comment->getLikes()->count();
 
-        return new JsonResponse(['likeCount' => $likeCount, 'likeId' => $like->getId()]);
+        return new JsonResponse([
+            'likeCount' => $likeCount,
+            'likeId' => $like->getId(),
+            'href' => $this->generateUrl('like.remove', ['id' => $like->getId()]),
+        ]);
     }
 
     /**
@@ -83,14 +91,18 @@ class LikeController extends AbstractController
         $em->remove($like);
         $em->flush();
 
+        $data = [];
+
         $entity = $like->getArticle() ?? $like->getComment();
         $likeCount  = $entity->getLikes()->count();
 
-        $data = ['likeCount' => $likeCount];
-
-        if ($like->getComment()) {
-            $data['commentId'] = $like->getComment()->getId();
+        $href = $this->generateUrl('like.comment', ['id' => $entity->getId()]);
+        if ($entity instanceof Article) {
+            $href = $this->generateUrl('like.article', ['slug' => $entity->getSlug()]);
         }
+
+        $data['likeCount'] = $likeCount;
+        $data['href'] = $href;
 
         return new JsonResponse($data);
     }

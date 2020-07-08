@@ -33,9 +33,9 @@
                             <small class="text-secondary comment-like-count">{{ comment.likes.count }}</small>
 
                             {% if commentUserLike %}
-                                <button class="comment-unlike btn btn-sm btn-link p-0" data-id="{{ commentUserLike.id }}">Unlike</button>
+                                <a class="comment-unlike text-primary text-decoration-none" href="{{ path('like.remove', {'id': commentUserLike.id}) }}">Unlike</a>
                             {% else %}
-                                <button class="comment-like btn btn-sm btn-link p-0" data-id="{{ comment.id }}">Like</button>
+                                <a class="comment-like text-primary text-decoration-none" href="{{ path('like.comment', {'id': comment.id}) }}">Like</a>
                             {% endif %}
 
                             <button class="comment-reply btn btn-sm btn-link p-0">Reply</button>
@@ -74,9 +74,9 @@
                                     {% if is_granted('ROLE_USER') %}
                                         <small class="text-secondary comment-like-count">{{ reply.likes.count }}</small>
                                         {% if replyUserLike %}
-                                            <button class="comment-unlike btn btn-sm btn-link p-0" data-id="{{ replyUserLike.id }}">Unlike</button>
+                                            <a class="comment-unlike text-primary text-decoration-none" href="{{ path('like.remove', {'id': replyUserLike.id}) }}">Unlike</a>
                                         {% else %}
-                                            <button class="comment-like btn btn-sm btn-link p-0" data-id="{{ reply.id }}">Like</button>
+                                            <a class="comment-like text-primary text-decoration-none" href="{{ path('like.comment', {'id': reply.id}) }}">Like</a>
                                         {% endif %}
                                     {% endif %}
 

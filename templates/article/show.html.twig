@@ -34,16 +34,11 @@
         {% if is_granted('ROLE_USER') %}
             <div class="mt-2">
                 <span class="text-secondary article-like-count">{{ article.likes.count }}</span>
-                    <a href="#"
+                    <a href="{{ userLike ? path('like.remove', {'id': userLikeId}) : path('like.article', {'slug': article.slug}) }}"
                        class="
                             text-secondary
-                            {{
-                                userLike
-                                ? 'article-unlike'
-                                : 'article-like'
-                            }}
+                            {{ userLike ? 'article-unlike' : 'article-like' }}
                         "
-                       data-id="{{ userLikeId }}"
                     >
                         <span
                                 class="{{ userLike ? 'fas' : 'far' }} fa-thumbs-up">
@@ -90,7 +85,7 @@
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
-    {# TODO: Improve javascript code #}
+
     <script>
         $(document).ready(function() {
             $('.comment-reply').on('click', function (e) {
@@ -99,87 +94,77 @@
                 $(this).addClass('d-none');
             });
 
-            $(this).on('click', '.article-like', function (e) {
+            $(this).on('click', '.article-unlike, .article-like', function (e) {
                 e.preventDefault();
                 let button = $(this);
-                button.find('[data-fa-i2svg]').removeClass('far').addClass('fas');
-                button.removeClass('article-like');
-                let currentLikeCountSelector = $('.article-like-count');
-                let currentLikeCount = currentLikeCountSelector.html();
-                currentLikeCountSelector.html(++currentLikeCount);
-                $.ajax({
-                    url: '{{ path('like.article', {slug: article.slug}) }}',
-                    type: 'POST',
-                    dataType: 'json',
-                    async: true,
-                    success: function (data) {
-                        console.log(data);
-                        $('.article-like-count').html(data.likeCount);
-                        button.attr('data-id', data.likeId);
-                        button.addClass('article-unlike');
-                    }
-                });
-            });
+                let href = button.attr('href');
+                button.removeAttr('href');
 
-            $(this).on('click', '.article-unlike', function (e) {
-                e.preventDefault();
-                let button = $(this);
-                button.find('[data-fa-i2svg]').removeClass('fas').addClass('far');
+                let currentLikeCountSelector = $('.article-like-count');
+                let currentLikeCount = parseInt(currentLikeCountSelector.text());
+
+                let newLikeCount = currentLikeCount - 1;
+                let isLike = false;
                 button.removeClass('article-unlike');
-                let currentLikeCountSelector = $('.article-like-count');
-                let currentLikeCount = currentLikeCountSelector.html();
-                currentLikeCountSelector.html(--currentLikeCount);
+                button.find('[data-fa-i2svg]').removeClass('fas').addClass('far');
+
+                if (button.hasClass('article-like')) {
+                    button.find('[data-fa-i2svg]').removeClass('far').addClass('fas');
+                    button.removeClass('article-like');
+                    newLikeCount = currentLikeCount + 1;
+                    isLike = true;
+                }
+
+                currentLikeCountSelector.text(newLikeCount);
+
                 $.ajax({
-                    url: '{{ path('like.remove', {"id": "like_id"}) }}'.replace('like_id', button.attr('data-id')),
+                    url: href,
                     type: 'POST',
                     dataType: 'json',
                     async: true,
                     success: function (data) {
                         console.log(data);
-                        $('.article-like-count').html(data.likeCount);
+                        currentLikeCountSelector.text(data.likeCount);
+                        button.attr('href', data.href);
                         button.addClass('article-like');
+                        if (isLike) button.toggleClass('article-like article-unlike');
                     }
                 });
             });
 
-            $(this).on('click', '.comment-like', function (e) {
+            $(this).on('click', '.comment-unlike, .comment-like', function (e) {
                 e.preventDefault();
                 let button = $(this);
-                button.removeClass('comment-like');
-                let currentLikeCount = button.siblings('.comment-like-count').html();
-                button.siblings('.comment-like-count').html(++currentLikeCount);
-                button.text('Unlike');
-                $.ajax({
-                    url: '{{ path('like.comment', {"id": "comment_id"}) }}'.replace('comment_id', button.attr('data-id')),
-                    type: 'POST',
-                    dataType: 'json',
-                    async: true,
-                    success: function (data) {
-                        console.log(data);
-                        button.siblings('.comment-like-count').html(data.likeCount);
-                        button.attr('data-id', data.likeId);
-                        button.addClass('comment-unlike');
-                    }
-                });
-            });
+                let href = button.attr('href');
+                button.removeAttr('href');
 
-            $(this).on('click', '.comment-unlike', function (e) {
-                e.preventDefault();
-                let button = $(this);
+                let currentLikeCount = parseInt(button.siblings('.comment-like-count').text());
+                let newLikeCount = currentLikeCount - 1;
+
+                let isLike = false;
                 button.removeClass('comment-unlike');
-                let currentLikeCount = button.siblings('.comment-like-count').html();
-                button.siblings('.comment-like-count').html(--currentLikeCount);
                 button.text('Like');
+
+                if (button.hasClass('comment-like')) {
+                    button.text('Unlike');
+                    button.removeClass('comment-like');
+                    newLikeCount = currentLikeCount + 1;
+                    isLike = true;
+                }
+
+                button.siblings('.comment-like-count').text(newLikeCount);
+
                 $.ajax({
-                    url: '{{ path('like.remove', {"id": "like_id"}) }}'.replace('like_id', button.attr('data-id')),
+                    url: href,
                     type: 'POST',
                     dataType: 'json',
                     async: true,
                     success: function (data) {
                         console.log(data);
-                        button.siblings('.comment-like-count').html(data.likeCount);
-                        button.attr('data-id', data.commentId);
+                        button.siblings('.comment-like-count').text(data.likeCount);
+                        button.attr('href', data.href);
                         button.addClass('comment-like');
+                        if (isLike) button.toggleClass('comment-like comment-unlike');
                     }
                 });
             });
